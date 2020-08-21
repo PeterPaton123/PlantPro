@@ -1,3 +1,4 @@
+
 #include "EPD_Test.h"
 #include "EPD_2in7b.h"
 #include "plant.h"
@@ -12,13 +13,13 @@ void getTime() {
   time( &rawtime);
   timeinfo = localtime(&rawtime);
 
-  char currTime[6] = "\0";
+  char currDate[6] = "\0";
   char currDay[3] = "\0";
   printf("%s\n", asctime(timeinfo));
-  strncpy(currTime, strchr(asctime(timeinfo), ':') - 2, 5);
+  strncpy(currDate, asctime(timeinfo) + 4, 6);
   strncpy(currDay, asctime(timeinfo), 3);
-  printf("Currtime: %s\n", currTime);
-  Paint_DrawString_EN(7, 7, currTime, &Font12, BLACK, WHITE);
+  printf("CurrDate: %s\n", currDate);
+  Paint_DrawString_EN(7, 7, currDate, &Font12, BLACK, WHITE);
   Paint_DrawString_EN(7, 37, currDay, &Font12, BLACK, WHITE);
 }
 
