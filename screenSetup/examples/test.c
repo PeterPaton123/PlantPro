@@ -8,6 +8,7 @@
 #include <stdbool.h>
 
 void getTime() {
+  // need to remove magic numbers in project defined header file
   time_t rawtime;
   struct tm * timeinfo;
   time( &rawtime);
@@ -43,8 +44,8 @@ plant **plantInitialise() {
   plants[0] = plantConstructor("plant 1", 0, true);
   plants[1] = plantConstructor("p2", 0, false);
   plants[2] = plantConstructor("plant number three", 0, true);
-  plants[3] = plantConstructor("plant 4", 1, false);
-  plants[4] = plantConstructor("plant 5", 2, false);
+  plants[3] = plantConstructor("plant 4", 0, false);
+  plants[4] = plantConstructor("plant 5", 0, false);
   return plants;
 }
 
