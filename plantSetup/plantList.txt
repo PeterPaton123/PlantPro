@@ -1,0 +1,5 @@
+-- name daysToWater frequency, priority
+plant-1 0 3 1
+p2 0 2 0
+plant-number-3 0 2 1
+p4 1 2 1

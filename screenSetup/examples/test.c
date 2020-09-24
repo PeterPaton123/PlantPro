@@ -32,7 +32,40 @@ plant *plantConstructor(char *name, int days, bool watered) {
   plt->name = calloc(strlen(name) + 1, sizeof(char));
   plt->name = strcpy(plt->name, name);
   plt->daysToWater = days;
-  plt->watered = watered;
+  plant *plantConstructor(char *name, int days, bool watered) {
+    plant *plt = malloc(sizeof(plant));
+    if (plt == NULL) {
+      printf("Plant %s malloc failed", name);
+    }
+    plt->name = calloc(strlen(name) + 1, sizeof(char));
+    plt->name = strcpy(plt->name, name);
+    plt->daysToWater = days;
+    plt->watered = watered;
+    return plt;
+  }
+
+  plant **plantInitialise() {
+    plant **plants = calloc(NO_OF_PLANTS, sizeof(plant*));
+    if (plants == NULL) {
+      printf("Plants array initialisation failed");
+    }
+    plants[0] = plantConstructor("plant 1", 0, true);
+    plants[1] = plantConstructor("p2", 0, false);
+    plants[2] = plantConstructor("plant number three", 0, true);
+    plants[3] = plantConstructor("plant 4", 0, false);
+    plants[4] = plantConstructor("plant 5", 0, false);
+    return plants;
+  }
+
+  void plantWrite(UBYTE *black, UBYTE *red, int x, int y, plant *plt) {
+    Paint_SelectImage(black);
+    Paint_DrawPoint(x, y+7, BLACK, DOT_PIXEL_3X3, DOT_STYLE_DFT);
+    Paint_DrawString_EN(x + 7, y, plt->name, &Font12, WHITE, BLACK);
+    Paint_SelectImage(red);
+    printf("string length %d\n", strlen(plt->name) * 4 + x + 3);
+    Paint_DrawLine(x + 5 , y + 15,(strlen(plt->name)*7) + (x + 5 + 7), y+15, BLACK, DOT_PIXEL_1X1, LINE_STYLE_DOTTED);
+    return;
+  }plt->watered = watered;
   return plt;
 }
 
