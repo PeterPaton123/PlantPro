@@ -16,70 +16,8 @@ plant *plantConstructor(char *name, int days, int dayInterval, bool priority) {
   return plt;
 }
 
-plantList *plantInitialise(const char *filename) {
-  plantList *list = malloc(sizeof(plantList));
-  if (list == NULL) {
-    perror("List allocation failed");
-    return -1;
-  }
-  
-  plant **plants = NULL;
-  int plantCount = 0;
-  
-  FILE *fp;
-  if ((fp = fopen(filename, "r")) == NULL) {
-    perror("Error opening file");
-    return -1;
-  }
-
-  int maxLineLength = 255;
-  char buffer[maxLineLength];
-
-  while(fgets(buffer, maxLineLength, fp)) {
-    //printf("%s\n", buffer);
-    if (buffer[0] != COMMENT_CHARACTER) {
-      //tokenise
-      char *tokens[4];
-      int tokenCount = 0;
-
-      char *token;
-
-      token = strtok(buffer,TOKEN_CHARACTER);
-
-      while(token != NULL) {
-	//printf("%s\n", token);
-	tokens[tokenCount++] = token;
-	token = strtok(NULL, TOKEN_CHARACTER);
-      }
-
-      plant* pPlant = plantConstructor(tokens[0], (int) tokens[1], (int) tokens[2], (bool) tokens[3]);
-
-      ++plantCount;
-      
-      if (plantCount == 1) {
-	plants = malloc(sizeof(plant*));
-      } else {
-	plants = realloc(plants, sizeof(plant*) * plantCount);
-      }
-      if (plants == NULL) {
-	perror("Error (re)allocating memory for plants");
-	return -1;
-      }
-      plants[plantCount - 1] = pPlant;
-    }
-    
-  }
-  
-  fclose(fp);
-  list->plts = plants;
-  list->noOfPlants = plantCount;
-  return list;
-}
-
-void freeList(plantList *list) {
-  for (int i = 0; i < list->noOfPlants; ++i) {
-    free(list->noOfPlants[i]);
-  }
+plantArray *plantInitialise(const char *filename) {
+  // have no freed each plant
   free(list->plts);
   free(list);
   return;
@@ -97,7 +35,7 @@ void freeList(plantList *list) {
 //}
 
 int main(void) {
-  plantList *plants = plantInitialise("plantList.txt");
-  freeList(plants);
+  plantArray *plants = plantInitialise("plantList.txt");
+  freeArray(plants);
   return 0;
 }

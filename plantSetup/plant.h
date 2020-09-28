@@ -3,6 +3,7 @@
 #define COMMENT_CHARACTER '-'
 #define TOKEN_CHARACTER " "
 
+
 typedef struct {
   char *name;
   int daysToWater;
@@ -10,7 +11,16 @@ typedef struct {
   int waterInterval;
 } plant;
 
+typedef struct plantPriorityQueueNode {
+  plant *plt;
+  struct plantPriorityQueueNode *next;
+} plantPriorityQueueNode;
+
 typedef struct {
-  plant **plts;
+  plantPriorityQueueNode *first;
   int noOfPlants;
-} plantList;
+} plantPriorityQueue;
+
+
+
+  

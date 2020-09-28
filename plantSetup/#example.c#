@@ -1,0 +1,13 @@
+typedef struct Node{
+  int val;
+  int val2;
+} Node;
+
+typedef struct Array{
+  Node* data;
+  int n;
+} Array;
+
+int main(){
+  x = malloc(sizeof(Node) * n_elements);
+  x[2]->val2 = 4

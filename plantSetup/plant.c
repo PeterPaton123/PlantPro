@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "plant.h"
 
@@ -16,15 +17,44 @@ plant *plantConstructor(char *name, int days, int dayInterval, bool priority) {
   return plt;
 }
 
-plantList *plantInitialise(const char *filename) {
-  plantList *list = malloc(sizeof(plantList));
-  if (list == NULL) {
-    perror("List allocation failed");
+plantPriorityQueueNode *newQueueNode(plant *plt) {
+  plantPriorityQueueNode *pNode = malloc(sizeof(plantPriorityQueueNode));
+    if (pNode == NULL) {
+      perror("Error allocating storage for plant node");
+    }
+    pNode->plt = plt;
+    pNode->next = NULL;
+    return pNode;
+}
+
+void plantQueueInsert(plantPriorityQueueNode **prev, plantPriorityQueueNode **curr, plant *plt) {
+  if (*curr == NULL) {
+    *curr = newQueueNode(plt);
+    return;
+  } else {
+    if (plt->daysToWater < (*curr)->plt->daysToWater || (plt->daysToWater == (*curr)->plt->daysToWater && plt->priority && !((*curr)->plt->priority))) {
+      // if plt has higher priority than curr
+      //if (prev == NULL) { // then curr is first node of queue so need to make new node first
+        plantPriorityQueueNode *currClone = newQueueNode((*curr)->plt);
+        free(*curr);
+        *curr = newQueueNode(plt);
+        (*curr)->next = currClone;
+        return;
+    } else {
+     plantQueueInsert(curr, &((*curr)->next), plt);
+    }
+  }
+}
+
+plantPriorityQueue *plantInitialise(const char *filename) {
+  plantPriorityQueue *pQueue = malloc(sizeof(plantPriorityQueue));
+  if (pQueue == NULL) {
+    perror("Queue allocation failed");
     return -1;
   }
   
-  plant **plants = NULL;
-  int plantCount = 0;
+  pQueue->first = NULL;
+  pQueue->noOfPlants = 0;
   
   FILE *fp;
   if ((fp = fopen(filename, "r")) == NULL) {
@@ -41,47 +71,38 @@ plantList *plantInitialise(const char *filename) {
       //tokenise
       char *tokens[4];
       int tokenCount = 0;
-
       char *token;
-
       token = strtok(buffer,TOKEN_CHARACTER);
-
       while(token != NULL) {
 	//printf("%s\n", token);
-	tokens[tokenCount++] = token;
-	token = strtok(NULL, TOKEN_CHARACTER);
+        tokens[tokenCount++] = token;
+        token = strtok(NULL, TOKEN_CHARACTER);
       }
-
-      plant* pPlant = plantConstructor(tokens[0], (int) tokens[1], (int) tokens[2], (bool) tokens[3]);
-
-      ++plantCount;
       
-      if (plantCount == 1) {
-	plants = malloc(sizeof(plant*));
-      } else {
-	plants = realloc(plants, sizeof(plant*) * plantCount);
-      }
-      if (plants == NULL) {
-	perror("Error (re)allocating memory for plants");
-	return -1;
-      }
-      plants[plantCount - 1] = pPlant;
+      bool b = !(strcmp(tokens[3], "1\n"));
+
+      plant* pPlant = plantConstructor(tokens[0], atoi(tokens[1]), atoi(tokens[2]), b);
+
+      //insert queue
+      plantQueueInsert(NULL, &(pQueue->first), pPlant);
+      pQueue->noOfPlants++;
+      
     }
-    
   }
   
   fclose(fp);
-  list->plts = plants;
-  list->noOfPlants = plantCount;
-  return list;
+  return pQueue;
 }
 
-void freeList(plantList *list) {
-  for (int i = 0; i < list->noOfPlants; ++i) {
-    free(list->plts[i]);
-  }
-  free(list->plts);
-  free(list);
+void freeQueue(plantPriorityQueue *queue) {
+  plantPriorityQueueNode *currNode = queue->first;
+  while (currNode != NULL)  {
+      free(currNode->plt);
+      plantPriorityQueueNode *nextNode = currNode->next;
+      free(currNode);
+      currNode = nextNode;
+    }
+  free(queue);
   return;
 }
 
@@ -97,7 +118,12 @@ void freeList(plantList *list) {
 //}
 
 int main(void) {
-  plantList *plants = plantInitialise("plantList.txt");
-  freeList(plants);
+  plantPriorityQueue *plants = plantInitialise("plantList.txt");
+    plantPriorityQueueNode *currNode = plants->first;
+    while (currNode != NULL)  {
+      printf("%s", currNode->plt->name);
+      currNode = currNode->next;
+  }
+  freeQueue(plants);
   return 0;
 }
