@@ -34,7 +34,6 @@ void plantQueueInsert(plantPriorityQueueNode **prev, plantPriorityQueueNode **cu
   } else {
     if (plt->daysToWater < (*curr)->plt->daysToWater || (plt->daysToWater == (*curr)->plt->daysToWater && plt->priority && !((*curr)->plt->priority))) {
       // if plt has higher priority than curr
-      //if (prev == NULL) { // then curr is first node of queue so need to make new node first
         plantPriorityQueueNode *currClone = newQueueNode((*curr)->plt);
         free(*curr);
         *curr = newQueueNode(plt);
@@ -103,6 +102,17 @@ void freeQueue(plantPriorityQueue *queue) {
       currNode = nextNode;
     }
   free(queue);
+  return;
+}
+
+void updateFile(plantPriorityQueue *queue, const char* filename) {
+ //open file
+  plantPriorityQueueNode *currNode = queue->first;
+  while (currNode != NULL)  {
+    // write to file
+    currNode = currNode->next;
+  }
+  //close file
   return;
 }
 

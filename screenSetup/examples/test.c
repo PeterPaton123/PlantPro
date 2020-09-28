@@ -23,7 +23,7 @@ void getTime() {
   Paint_DrawString_EN(7, 7, currDate, &Font12, BLACK, WHITE);
   Paint_DrawString_EN(7, 37, currDay, &Font12, BLACK, WHITE);
 }
-
+/*
 plant *plantConstructor(char *name, int days, bool watered) {
   plant *plt = malloc(sizeof(plant));
   if (plt == NULL) {
@@ -91,6 +91,8 @@ void plantWrite(UBYTE *black, UBYTE *red, int x, int y, plant *plt) {
   Paint_DrawLine(x + 5 , y + 15,(strlen(plt->name)*7) + (x + 5 + 7), y+15, BLACK, DOT_PIXEL_1X1, LINE_STYLE_DOTTED);
   return;
 }
+*/
+
 
 int test(void) {
  printf("EPD_2IN7B_test Demo\r\n");
