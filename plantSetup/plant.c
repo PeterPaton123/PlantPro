@@ -13,6 +13,7 @@ plant *plantConstructor(char *name, int days, int dayInterval, bool priority) {
   plt->name = calloc(strlen(name) + 1, sizeof(char));
   plt->name = strcpy(plt->name, name);
   plt->daysToWater = days;
+  plt->waterInterval = dayInterval;
   plt->priority = priority;
   return plt;
 }
@@ -61,7 +62,6 @@ plantPriorityQueue *plantInitialise(const char *filename) {
     return -1;
   }
 
-  int maxLineLength = 255;
   char buffer[maxLineLength];
 
   while(fgets(buffer, maxLineLength, fp)) {
@@ -105,28 +105,41 @@ void freeQueue(plantPriorityQueue *queue) {
   return;
 }
 
+void plantText(FILE *fp, const plant *plt) {
+    fprintf(fp, "%s", plt->name);
+    fprintf(fp, "%s", " ");
+    fprintf(fp, "%d", plt->daysToWater);
+    fprintf(fp, "%s", " ");
+    fprintf(fp, "%d", plt->waterInterval);
+    fprintf(fp, "%s", " ");
+    fprintf(fp, "%d", (int) plt->priority);
+    fprintf(fp, "%s", "\n");
+    return;
+}
+
 void updateFile(plantPriorityQueue *queue, const char* filename) {
  //open file
+  FILE *fp;
+  if ((fp = fopen(filename, "w")) == NULL) {
+    perror("Error opening file");
+  }
+  
+  fprintf(fp, "%s", "-- name daysToWater frequency, priority\n");
+  //fprintf(fp, "%s", "\n");
+  
   plantPriorityQueueNode *currNode = queue->first;
   while (currNode != NULL)  {
-    // write to file
+    if (currNode->plt->daysToWater == -1) {
+      currNode->plt->daysToWater = currNode->plt->waterInterval;
+    }
+    plantText(fp, currNode->plt);
     currNode = currNode->next;
   }
-  //close file
+  fclose(fp);
   return;
 }
 
-//
-//void plantWrite(UBYTE *black, UBYTE *red, int x, int y, plant *plt) {
-// Paint_SelectImage(black);
-// Paint_DrawPoint(x, y+7, BLACK, DOT_PIXEL_3X3, DOT_STYLE_DFT);
-// Paint_DrawString_EN(x + 7, y, plt->name, &Font12, WHITE, BLACK);
-// Paint_SelectImage(red);
-// printf("string length %d\n", strlen(plt->name) * 4 + x + 3);
-// Paint_DrawLine(x + 5 , y + 15,(strlen(plt->name)*7) + (x + 5 + 7), y+15, BLACK, DOT_PIXEL_1X1, LINE_STYLE_DOTTED);
-//  return;
-//}
-
+/*
 int main(void) {
   plantPriorityQueue *plants = plantInitialise("plantList.txt");
     plantPriorityQueueNode *currNode = plants->first;
@@ -134,6 +147,8 @@ int main(void) {
       printf("%s", currNode->plt->name);
       currNode = currNode->next;
   }
+  updateFile(plants, "plantList.txt");
   freeQueue(plants);
   return 0;
 }
+* */
